@@ -1,6 +1,6 @@
 # Clever Provider for OAuth 2.0 Client
-
-[![License](https://img.shields.io/packagist/l/schoolrunner/oauth2-clever.svg)](https://github.com/schoolrunner/oauth2-cleover/blob/master/LICENSE)
+[![CircleCI](https://img.shields.io/circleci/project/Schoolrunner/oauth2-clever.svg)](https://circleci.com/gh/Schoolrunner/oauth2-clever)
+[![License](https://img.shields.io/packagist/l/schoolrunner/oauth2-clever.svg)](https://github.com/schoolrunner/oauth2-clever/blob/master/LICENSE)
 [![Latest Stable Version](https://img.shields.io/packagist/v/schoolrunner/oauth2-clever.svg)](https://packagist.org/packages/schoolrunner/oauth2-clever)
 
 This package provides [Clever OAuth 2.0](https://dev.clever.com/instant-login/bearer-tokens) support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
