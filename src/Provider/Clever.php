@@ -97,7 +97,16 @@ class Clever extends AbstractProvider
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        $userClass = 'Schoolrunner\\OAuth2\\Client\\Provider\\Clever' . ucfirst($response['type']);
+        $base = 'Schoolrunner\\OAuth2\\Client\\Provider\\Clever';
+        
+        $userClass = $base . ucfirst($response['type']);
+        
+        // if the type we get back doesnt have a class use generic user class
+        if (!class_exists($userClass))
+        {
+            $userClass = $base . 'User';
+        }
+        
         return new $userClass($response);
     }
 }
