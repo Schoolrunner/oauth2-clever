@@ -1,5 +1,5 @@
 <?php 
-namespace Schoolrunner\OAuth2\Client\Provider;
+namespace Schoolrunner\OAuth2\Client\User;
 
 /**
  * Clever Teacher object

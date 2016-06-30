@@ -1,6 +1,7 @@
 <?php 
-namespace Schoolrunner\OAuth2\Client\Provider;
+namespace Schoolrunner\OAuth2\Client\User;
 
+use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 /**
@@ -16,13 +17,21 @@ class CleverUser implements ResourceOwnerInterface
     private $data;
     
     /**
+     * Clever access token
+     * 
+     * @var AccessToken
+     */
+    private $token;
+    
+    /**
      * Create Clever user
      * 
      * @param $data Clever user data
      */
-    public function __construct($data) 
+    public function __construct($data, AccessToken $token) 
     {
         $this->data = $data;
+        $this->token = $token;
     }
     
     /**

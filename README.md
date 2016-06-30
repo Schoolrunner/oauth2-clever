@@ -21,8 +21,8 @@ Usage is the same as The League's OAuth client, using `Schoolrunner\OAuth2\Clien
 
 ```php
 $provider = new Schoolrunner\OAuth2\Client\Provider\Clever([
-    'clientId'     => '{clover-client-id}',
-    'clientSecret' => '{clover-client-secret}',
+    'clientId'     => '{clever-client-id}',
+    'clientSecret' => '{clever-client-secret}',
     'redirectUri'  => 'https://example.com/callback-url'
 ]);
 
