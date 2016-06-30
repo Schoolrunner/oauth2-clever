@@ -80,7 +80,7 @@ class CleverTest extends \PHPUnit_Framework_TestCase
         $token = m::mock('League\OAuth2\Client\Token\AccessToken');
         $user = $provider->getResourceOwner($token);
         
-        $this->assertInstanceOf('Schoolrunner\OAuth2\Client\Provider\CleverTeacher', $user);
+        $this->assertInstanceOf('Schoolrunner\OAuth2\Client\User\CleverTeacher', $user);
     
         $this->assertEquals(12345, $user->getId());
         $this->assertEquals('mock_first_name mock_middle_name mock_last_name', $user->getName());
@@ -114,6 +114,6 @@ class CleverTest extends \PHPUnit_Framework_TestCase
         $user = $provider->getResourceOwner($token);
         
         $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
-        $this->assertInstanceOf('Schoolrunner\OAuth2\Client\Provider\CleverUser', $user);
+        $this->assertInstanceOf('Schoolrunner\OAuth2\Client\User\CleverUser', $user);
     }
 }

@@ -6,6 +6,7 @@ use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use Psr\Http\Message\ResponseInterface;
+use Schoolrunner\OAuth2\Client\User\UserFactory;
 
 /**
  * Clever OAuth2 Client
@@ -13,7 +14,58 @@ use Psr\Http\Message\ResponseInterface;
 class Clever extends AbstractProvider
 {
     use BearerAuthorizationTrait;
+    
+    /**
+     * @var UserFactory
+     */
+    protected $userFactory;
+    
+    /**
+     * Constructs an OAuth 2.0 service provider.
+     *
+     * Override to add UserFactory
+     *
+     * @param array $options An array of options to set on this provider.
+     *     Options include `clientId`, `clientSecret`, `redirectUri`, and `state`.
+     *     Individual providers may introduce more options, as needed.
+     * @param array $collaborators An array of collaborators that may be used to
+     *     override this provider's default behavior. Collaborators include
+     *     `grantFactory`, `requestFactory`, `httpClient`, and `randomFactory`.
+     *     Individual providers may introduce more collaborators, as needed.
+     */
+    public function __construct(array $options = [], array $collaborators = [])
+    {
+        parent::__construct($options, $collaborators);
+        
+        if (empty($collaborators['userFactory'])) {
+            $collaborators['userFactory'] = new UserFactory();
+        }
+        $this->setUserFactory($collaborators['userFactory']);
+    }
+    
+    /**
+     * Sets the instance of the user factory.
+     *
+     * @param  UserFactory $factory
+     * @return self
+     */
+    public function setUserFactory(UserFactory $factory)
+    {
+        $this->userFactory = $factory;
 
+        return $this;
+    }
+
+    /**
+     * Returns the current user factory instance.
+     *
+     * @return UserFactory
+     */
+    public function getUserFactory()
+    {
+        return $this->userFactory;
+    }
+    
     /**
      * Get base authorization url
      * 
@@ -59,18 +111,21 @@ class Clever extends AbstractProvider
     }
     
     /**
-     * Add Authorization header to Default headers
+     * Get Access Token Options
      * 
+     * Override to add a Basic Auth header needed when 
+     * requesting an access token from Clever
+     *
+     * @param  array $params Access token params
      * @return array Default Headers
      */
-    protected function getDefaultHeaders()
-    {
-        $auth = $this->clientId . ':' . $this->clientSecret;
-        
-        return [
-            'Authorization' => 'Basic ' . base64_encode($auth)
-        ];
-    }
+     protected function getAccessTokenOptions(array $params)
+     {
+         $options = parent::getAccessTokenOptions($params);
+         $options['headers']['authorization'] = 'Basic ' . base64_encode($this->clientId . ':' . $this->clientSecret);
+
+         return $options;
+     }
     
     /**
      * Check response for errors
@@ -81,7 +136,7 @@ class Clever extends AbstractProvider
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        if ($response->getStatusCode() != 200)
+        if ($response->getStatusCode() >= 400)
         {
             $data = (is_array($data)) ? $data : json_decode($data, true);
             throw new IdentityProviderException($data['error_description'], $response->getStatusCode(), $data);
@@ -97,16 +152,10 @@ class Clever extends AbstractProvider
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        $base = 'Schoolrunner\\OAuth2\\Client\\Provider\\Clever';
-        
-        $userClass = $base . ucfirst($response['type']);
-        
-        // if the type we get back doesnt have a class use generic user class
-        if (!class_exists($userClass))
-        {
-            $userClass = $base . 'User';
-        }
-        
-        return new $userClass($response);
+        $className = $this
+            ->getUserFactory()
+            ->getClassNameForUserType($response['type']);
+
+        return new $className($response, $token);
     }
 }
