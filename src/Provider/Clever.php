@@ -81,7 +81,7 @@ class Clever extends AbstractProvider
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        if ($response->getStatusCode() != 200)
+        if ($response->getStatusCode() >= 400)
         {
             $data = (is_array($data)) ? $data : json_decode($data, true);
             throw new IdentityProviderException($data['error_description'], $response->getStatusCode(), $data);
