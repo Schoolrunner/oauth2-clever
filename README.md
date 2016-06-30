@@ -1,5 +1,6 @@
 # Clever Provider for OAuth 2.0 Client
 
+[![CirclCI](https://img.shields.io/circleci/project/Schoolrunner/oauth2-clever.svg)](https://circleci.com/gh/Schoolrunner/oauth2-clever)
 [![License](https://img.shields.io/packagist/l/schoolrunner/oauth2-clever.svg)](https://github.com/schoolrunner/oauth2-cleover/blob/master/LICENSE)
 [![Latest Stable Version](https://img.shields.io/packagist/v/schoolrunner/oauth2-clever.svg)](https://packagist.org/packages/schoolrunner/oauth2-clever)
 
