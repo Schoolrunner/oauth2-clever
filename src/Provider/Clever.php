@@ -111,7 +111,7 @@ class Clever extends AbstractProvider
     }
     
     /**
-     * Get Access Token Options
+     * Get Access Token Request
      * 
      * Override to add a Basic Auth header needed when 
      * requesting an access token from Clever
@@ -119,12 +119,14 @@ class Clever extends AbstractProvider
      * @param  array $params Access token params
      * @return array Default Headers
      */
-     protected function getAccessTokenOptions(array $params)
+     protected function getAccessTokenRequest(array $params)
      {
-         $options = parent::getAccessTokenOptions($params);
+         $method  = $this->getAccessTokenMethod();
+         $url     = $this->getAccessTokenUrl($params);
+         $options = $this->optionProvider->getAccessTokenOptions($this->getAccessTokenMethod(), $params);
          $options['headers']['authorization'] = 'Basic ' . base64_encode($this->clientId . ':' . $this->clientSecret);
-
-         return $options;
+ 
+         return $this->getRequest($method, $url, $options);
      }
     
     /**
