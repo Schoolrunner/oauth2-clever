@@ -58,17 +58,20 @@ class CleverTest extends \PHPUnit_Framework_TestCase
     public function testResourceOwnerDetailsUrl()
     {
         $token = m::mock('League\OAuth2\Client\Token\AccessToken', [['access_token' => 'mock_access_token']]);
-    
+
+        $user = $this->provider->getResourceOwner($token);
+
         $url = $this->provider->getResourceOwnerDetailsUrl($token);
         $uri = parse_url($url);
+        $uriId = array_slice(explode('/', $uri['path']), 0)[3];
     
-        $this->assertEquals('/me', $uri['path']);
+        $this->assertEquals($uriId, $user->getId());
         $this->assertNotContains('mock_access_token', $url);
     }
 
     public function testUserData()
     {
-        $response = json_decode('{"type": "teacher", "data": {"id": "12345", "sis_id": "54321", "email": "mock_email", "name": {"first": "mock_first_name", "middle": "mock_middle_name", "last": "mock_last_name"}, "school": "1111122222", "district": "54545454"}}', true);
+        $response = json_decode('{"data": {"id": "12345", "sis_id": "54321", "email": "mock_email", "name": {"first": "mock_first_name", "middle": "mock_middle_name", "last": "mock_last_name"}, "school": "1111122222", "district": "54545454"}, "links": [{"rel": "self", "uri": "/v2.0/teachers/12345"}]}', true);
 
         $provider = m::mock('Schoolrunner\OAuth2\Client\Provider\Clever[fetchResourceOwnerDetails]')
             ->shouldAllowMockingProtectedMethods();
@@ -101,7 +104,7 @@ class CleverTest extends \PHPUnit_Framework_TestCase
     
     public function testUserDataUnknownUserType()
     {
-        $response = json_decode('{"type": "district_admin", "data": {"id": "12345", "sis_id": "54321", "email": "mock_email", "name": {"first": "mock_first_name", "middle": "mock_middle_name", "last": "mock_last_name"}, "school": "1111122222", "district": "54545454"}}', true);
+        $response = json_decode('{"data": {"id": "12345", "sis_id": "54321", "email": "mock_email", "name": {"first": "mock_first_name", "middle": "mock_middle_name", "last": "mock_last_name"}, "school": "1111122222", "district": "54545454"}, "links": [{"rel": "self", "uri": "/v2.0/districtadmins/12345"}]}', true);
 
         $provider = m::mock('Schoolrunner\OAuth2\Client\Provider\Clever[fetchResourceOwnerDetails]')
             ->shouldAllowMockingProtectedMethods();
