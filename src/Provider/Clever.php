@@ -93,7 +93,21 @@ class Clever extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return 'https://api.clever.com/me';
+        $request = parent::getAuthenticatedRequest('GET', 'https://api.clever.com/me', $token);
+
+        $response = parent::getParsedResponse($request);
+       
+        $canonicalUri;
+
+        foreach ($response['links'] as $link) {
+
+          if ($link['rel'] === 'canonical') {
+            $canonicalUri = $link['uri'];
+          }
+
+        };
+
+        return 'https://api.clever.com' . $canonicalUri;
     }
     
     /**
@@ -139,7 +153,7 @@ class Clever extends AbstractProvider
         if ($response->getStatusCode() >= 400)
         {
             $data = (is_array($data)) ? $data : json_decode($data, true);
-            throw new IdentityProviderException($data['error_description'], $response->getStatusCode(), $data);
+            throw new IdentityProviderException($data['error'], $response->getStatusCode(), $data);
         }
     }
     
@@ -152,9 +166,13 @@ class Clever extends AbstractProvider
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
+        $selfUri = $response['links'][0]['uri'];
+
+        $typeString = array_slice(explode('/', $selfUri), 2)[0];
+
         $className = $this
             ->getUserFactory()
-            ->getClassNameForUserType($response['type']);
+            ->getClassNameForUserType(rtrim($typeString, 's'));
 
         return new $className($response, $token);
     }
